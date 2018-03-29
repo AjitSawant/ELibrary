@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <ImageView
+        android:layout_width="240dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/border_light_blue_bg"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="6dp"
+                android:layout_marginLeft="4dp"
+                android:tint="@color/black"
+                android:src="@drawable/ic_user_name"/>
+
+            <android.support.design.widget.TextInputLayout
+                style="@style/TextLabel_setting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/border_lighter_gray"
+                android:paddingBottom="2dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp">
+
+                <EditText
+                    android:id="@+id/login_edt_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/username"
+                    android:maxLines="1"
+                    android:paddingBottom="12dp"
+                    android:paddingTop="6dp"
+                    android:singleLine="true"
+                    android:text="Kushilab"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="4dp"
+                android:tint="@color/colorPrimaryDark"
+                android:src="@drawable/password"  />
+
+            <android.support.design.widget.TextInputLayout
+                style="@style/TextLabel_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/border_lighter_gray"
+                android:paddingBottom="2dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                app:passwordToggleEnabled="true"
+                android:paddingTop="8dp">
+
+                <EditText
+                    android:id="@+id/login_edt_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/password"
+                    android:text="Kuhusona1"
+                    android:inputType="textPassword"
+                    android:password="true"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:paddingTop="6dp"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp">
+
+            <CheckBox
+                android:id="@+id/login_cb_remember_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:paddingLeft="4dp"
+                android:text="Remember me"
+                android:layout_weight="1"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:buttonTint="@color/colorPrimaryDark" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/login_btn_sign_in"
+            android:layout_width="140dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6sp"
+            android:background="@drawable/border_button_bg"
+            android:text="@string/login"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
