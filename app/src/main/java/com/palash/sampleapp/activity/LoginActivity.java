@@ -196,8 +196,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             localSetting.hideDialog(progressDialog);
 
             Log.d("cll","");
-
-
             RememberMe = login_cb_remember_me.isChecked();
             elLogin.setUserId("1");
             elLogin.setFullName("Ajit Sawant");

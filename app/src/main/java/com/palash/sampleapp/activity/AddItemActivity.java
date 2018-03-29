@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -71,7 +72,6 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     private String SelectedCatalogID = "0";
     private String SelectedCatalogName = "";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,10 +113,20 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        menu.findItem(R.id.menu_toolbar_save).setVisible(true);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.menu_toolbar_save:
+                bindData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
