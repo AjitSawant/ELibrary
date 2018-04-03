@@ -14,6 +14,7 @@ public class Constants {
     public static final int HTTP_AMBIGUOUS_300 = 300;
     public static final int SYNC_STOP = 1001;
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String CONVERT_DATE_TIME_FORMAT = "dd MMM yyyy HH:mm:aa";
 
     // Test link
     public static final String BASE_URL = "http://192.168.1.133/InamdarApp/";
@@ -22,4 +23,5 @@ public class Constants {
     public static final String STATUS_LOG_OUT = "logout";
     public static final String LOGIN_URL = BASE_URL + "Login/DocLogin";
     public static final String ADD_ITEM_URL = BASE_URL + "Order/AddItem";
+    public static final String ADD_ORDER_URL = BASE_URL + "Order/AddOrder";
 }

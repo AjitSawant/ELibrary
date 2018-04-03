@@ -22,6 +22,7 @@ public class SplashActivity extends AppCompatActivity {
     private DatabaseContract databaseContract;
     private DatabaseAdapter databaseAdapter;
     private DatabaseAdapter.LoginAdapter loginAdapter;
+
     private ArrayList<ELLogin> listLogin;
 
     @Override

@@ -581,7 +581,7 @@ public class DatabaseAdapter {
             ArrayList<ELItem> objELItems = new ArrayList<ELItem>();
             Cursor result = null;
             try {
-                String WhereClause = DatabaseContract.Item.COLUMN_NAME_ITEM_ID + "='" + ItemID + "'";
+                String WhereClause = DatabaseContract.Item.COLUMN_NAME_ORDER_NUMBER + "='" + ItemID + "'";
                 result = databaseContract.open().query(DatabaseContract.Item.TABLE_NAME, projection, WhereClause, null, null, null, null);
                 objELItems = CursorToArrayList(result);
             } catch (Exception e) {
@@ -594,6 +594,17 @@ public class DatabaseAdapter {
             try {
                 SQLiteDatabase db = databaseContract.open();
                 db.delete(DatabaseContract.Item.TABLE_NAME, null, null);
+                db.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void deleteItem(String ItemID) {
+            try {
+                String WhereClause = DatabaseContract.Item.COLUMN_NAME_ITEM_ID + "='" + ItemID + "'";
+                SQLiteDatabase db = databaseContract.open();
+                db.delete(DatabaseContract.Item.TABLE_NAME, WhereClause, null);
                 db.close();
             } catch (SQLException e) {
                 e.printStackTrace();

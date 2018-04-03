@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">E-Library</string>
+    <string name="app_name">E-LibraryApp</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="dashboard">Dashboard</string>
-    <string name="list_order">order List</string>
+    <string name="list_order">Order List</string>
 
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -13,7 +13,7 @@
 
     <string name="add_order">Add Order</string>
     <string name="add_item">Add Item</string>
-    <string name="catelog_name">Catelog Name</string>
+    <string name="catelog_name">Catalog Name</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="no_item">No Item Added.</string>

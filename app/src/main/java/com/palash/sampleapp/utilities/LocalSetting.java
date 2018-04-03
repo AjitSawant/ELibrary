@@ -57,17 +57,6 @@ public class LocalSetting {
         }
     }
 
-    //hide currently showing progress dialog
-    public static void hideDialog(ProgressDialog progressDialog) {
-        try {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void RunScheduler(Context context) {
         try {
             SchedulerManager.getInstance().runNow(context, SynchronizationTask.class, 1);

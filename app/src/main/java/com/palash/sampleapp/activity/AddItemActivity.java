@@ -163,13 +163,34 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
 
     private void bindData() {
         elItem = new ELItem();
+        elItem.setOrderNumber("1001");
+        elItem.setItemID(localSetting.returnCurrentDate());
         elItem.setCatalogID(SelectedCatalogID);
         elItem.setCatalogName(SelectedCatalogName);
         elItem.setPageNo(add_item_pageno_edt.getText().toString());
+        elItem.setAttachmentName("Test.jpeg");
         elItem.setItemRemark(item_remark_edt.getText().toString());
         elItem.setItemAddedDate(localSetting.returnCurrentDate());
 
-        new AddItemTask().execute();
+        new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Are you sure?")
+                .setContentText("Do you really want to add this item!")
+                .setConfirmText("Yes")
+                .setCancelText("No")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                        new AddItemTask().execute();
+                    }
+                })
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                    }
+                })
+                .show();
     }
 
     @Override

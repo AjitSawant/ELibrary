@@ -26,6 +26,7 @@ import com.palash.sampleapp.database.DatabaseAdapter;
 import com.palash.sampleapp.database.DatabaseContract;
 import com.palash.sampleapp.entiry.ELLogin;
 import com.palash.sampleapp.fragment.AddOrderFragment;
+import com.palash.sampleapp.fragment.OrderListFragment;
 import com.palash.sampleapp.fragment.PatientListFragment;
 import com.palash.sampleapp.task.SynchronizationTask;
 import com.palash.sampleapp.utilities.Constants;
@@ -182,7 +183,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_menu_add_order) {
             fragmentClass = AddOrderFragment.class;
         } else if (id == R.id.nav_menu_list_order) {
-            startActivity(new Intent(context, PhotoActivity.class));
+            fragmentClass = OrderListFragment.class;
+            //startActivity(new Intent(context, PhotoActivity.class));
         } else if (id == R.id.nav_menu_logout) {
             Logout();
         }

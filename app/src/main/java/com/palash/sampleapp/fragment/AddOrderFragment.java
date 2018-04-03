@@ -2,8 +2,10 @@ package com.palash.sampleapp.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +16,21 @@ import android.widget.TextView;
 import com.palash.sampleapp.R;
 import com.palash.sampleapp.activity.AddItemActivity;
 import com.palash.sampleapp.adapter.ItemListAdapter;
+import com.palash.sampleapp.api.JsonObjectMapper;
+import com.palash.sampleapp.api.WebServiceConsumer;
 import com.palash.sampleapp.database.DatabaseAdapter;
 import com.palash.sampleapp.database.DatabaseContract;
 import com.palash.sampleapp.entiry.ELItem;
 import com.palash.sampleapp.entiry.ELLogin;
 import com.palash.sampleapp.entiry.ELOrder;
+import com.palash.sampleapp.utilities.Constants;
 import com.palash.sampleapp.utilities.LocalSetting;
+import com.palash.sampleapp.utilities.TransparentProgressDialog;
+import com.squareup.okhttp.Response;
 
 import java.util.ArrayList;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class AddOrderFragment extends Fragment implements View.OnClickListener {
 
@@ -41,6 +50,7 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
     private ArrayList<ELItem> elItemArrayList;
 
     private TextView button_add_new_item;
+    private TextView button_add_order;
     private ListView item_list;
     private LinearLayout item_no_data;
 
@@ -60,12 +70,15 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
 
     private void InitView(View view) {
         button_add_new_item = (TextView) view.findViewById(R.id.button_add_new_item);
+        button_add_order = (TextView) view.findViewById(R.id.button_add_order);
         item_list = (ListView) view.findViewById(R.id.item_list);
         item_no_data = (LinearLayout) view.findViewById(R.id.item_no_data);
 
         item_list.setVisibility(View.GONE);
+        button_add_order.setVisibility(View.GONE);
         item_no_data.setVisibility(View.VISIBLE);
         button_add_new_item.setOnClickListener(this);
+        button_add_order.setOnClickListener(this);
     }
 
     private void initialize() {
@@ -96,6 +109,7 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
         elItemArrayList = itemAdapterDB.listAll();
         if (elItemArrayList != null && elItemArrayList.size() > 0) {
             item_list.setVisibility(View.VISIBLE);
+            button_add_order.setVisibility(View.VISIBLE);
             item_no_data.setVisibility(View.GONE);
 
             itemListAdapter = new ItemListAdapter(context, elItemArrayList);
@@ -103,6 +117,7 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
             itemListAdapter.notifyDataSetChanged();
         } else {
             item_list.setVisibility(View.GONE);
+            button_add_order.setVisibility(View.GONE);
             item_no_data.setVisibility(View.VISIBLE);
         }
     }
@@ -113,6 +128,92 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
             case R.id.button_add_new_item:
                 startActivity(new Intent(context, AddItemActivity.class));
                 break;
+            case R.id.button_add_order:
+                bindList();
+                break;
+        }
+    }
+
+    private void bindList() {
+        elOrder = new ELOrder();
+        elOrder.setOrderNumber("1001");
+        elOrder.setOrderAddedDate(localSetting.returnCurrentDate());
+
+        new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("Are you sure?")
+                .setContentText("Do you really want to add this order!")
+                .setConfirmText("Yes")
+                .setCancelText("No")
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                        new AddOrderTask().execute();
+                    }
+                })
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.dismissWithAnimation();
+                    }
+                })
+                .show();
+    }
+
+    public class AddOrderTask extends AsyncTask<Void, Void, String> {
+        private JsonObjectMapper objectMapper;
+        private WebServiceConsumer serviceConsumer;
+        private Response response;
+        private int responseCode = 0;
+        private String jSonData;
+        private TransparentProgressDialog progressDialog = null;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = localSetting.showDialog(context);
+            progressDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String responseString = "";
+            try {
+                objectMapper = new JsonObjectMapper();
+                serviceConsumer = new WebServiceConsumer(context, null, null);
+                jSonData = objectMapper.unMap(elOrder);
+                response = serviceConsumer.POST(Constants.ADD_ORDER_URL, jSonData);
+
+                if (response != null) {
+                    responseString = response.body().string();
+                    responseCode = response.code();
+                    Log.d(Constants.TAG, "Response code:" + responseCode);
+                    Log.d(Constants.TAG, "Response string:" + responseString);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return responseString;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            localSetting.hideDialog(progressDialog);
+            orderAdapterDB.create(elOrder);
+            button_add_order.setVisibility(View.GONE);
+            new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
+                    .setTitleText(context.getResources().getString(R.string.app_name))
+                    .setContentText("Order Added Successfully")
+                    .setConfirmText("OK")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            sDialog.dismissWithAnimation();
+                        }
+                    })
+                    .show();
+
+            super.onPostExecute(result);
         }
     }
 }
