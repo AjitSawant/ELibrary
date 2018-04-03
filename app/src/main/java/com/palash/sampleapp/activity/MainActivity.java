@@ -30,6 +30,7 @@ import com.palash.sampleapp.fragment.OrderListFragment;
 import com.palash.sampleapp.fragment.PatientListFragment;
 import com.palash.sampleapp.task.SynchronizationTask;
 import com.palash.sampleapp.utilities.Constants;
+import com.palash.sampleapp.utilities.LocalSetting;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Context context;
+    private LocalSetting localSetting;
     private DatabaseContract databaseContract;
     private DatabaseAdapter databaseAdapter;
     private DatabaseAdapter.LoginAdapter loginAdapter;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void Init() {
         try {
             context = this;
+            localSetting = new LocalSetting();
             databaseContract = new DatabaseContract(context);
             databaseAdapter = new DatabaseAdapter(databaseContract);
             loginAdapter = databaseAdapter.new LoginAdapter();
@@ -89,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             header = navigationView.getHeaderView(0);
             home_fl_content = (FrameLayout) findViewById(R.id.home_fl_content);
             fragmentManager = getSupportFragmentManager();
-            ShowAddmittedPatientList();
+            ShowOrderList();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -101,20 +104,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
     }
 
-    private void ShowAddmittedPatientList() {
+    public void ShowOrderList() {
         try {
-            fragmentClass = AddOrderFragment.class;
+            fragmentClass = OrderListFragment.class;
             if (fragmentClass != null) {
                 try {
                     fragment = (Fragment) fragmentClass.newInstance();
+                    /*Bundle bundle = new Bundle();
+                    bundle.putString("OrderNumber", localSetting.currentTimeStamp());
+                    fragment.setArguments(bundle);*/
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
                 fragmentManager.beginTransaction().replace(R.id.home_fl_content, fragment).addToBackStack(null).commit();
-                setTitle(context.getResources().getString(R.string.add_order));
-                navigationView.getMenu().getItem(0).setChecked(true);
+                setTitle(context.getResources().getString(R.string.list_order));
+                navigationView.getMenu().getItem(1).setChecked(true);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_menu_add_order) {
             fragmentClass = AddOrderFragment.class;
         } else if (id == R.id.nav_menu_list_order) {
+            Constants.CURRENT_ORDER_TIME_STAMP = localSetting.currentTimeStamp();
             fragmentClass = OrderListFragment.class;
             //startActivity(new Intent(context, PhotoActivity.class));
         } else if (id == R.id.nav_menu_logout) {
@@ -192,6 +199,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (fragmentClass != null) {
             try {
                 fragment = (Fragment) fragmentClass.newInstance();
+                Bundle bundle = new Bundle();
+                bundle.putString("OrderNumber", localSetting.currentTimeStamp());
+                fragment.setArguments(bundle);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

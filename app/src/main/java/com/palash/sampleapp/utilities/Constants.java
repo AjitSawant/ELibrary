@@ -13,6 +13,7 @@ public class Constants {
     public static final int HTTP_NOT_OK_501 = 501;
     public static final int HTTP_AMBIGUOUS_300 = 300;
     public static final int SYNC_STOP = 1001;
+    public static String CURRENT_ORDER_TIME_STAMP = "";
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String CONVERT_DATE_TIME_FORMAT = "dd MMM yyyy HH:mm:aa";
 

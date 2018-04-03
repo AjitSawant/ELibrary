@@ -71,6 +71,7 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
 
     private String SelectedCatalogID = "0";
     private String SelectedCatalogName = "";
+    private String OrderNumber = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +101,7 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
         if (elArrayLogin != null && elArrayLogin.size() > 0) {
             elLogin = elArrayLogin.get(0);
         }
+        OrderNumber = getIntent().getStringExtra("OrderNumber");
     }
 
     private void InitView() {
@@ -163,14 +165,15 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
 
     private void bindData() {
         elItem = new ELItem();
-        elItem.setOrderNumber("1001");
-        elItem.setItemID(localSetting.returnCurrentDate());
+        elItem.setOrderNumber(OrderNumber);
+        elItem.setItemID(localSetting.currentTimeStamp());
         elItem.setCatalogID(SelectedCatalogID);
         elItem.setCatalogName(SelectedCatalogName);
         elItem.setPageNo(add_item_pageno_edt.getText().toString());
         elItem.setAttachmentName("Test.jpeg");
         elItem.setItemRemark(item_remark_edt.getText().toString());
         elItem.setItemAddedDate(localSetting.returnCurrentDate());
+        elItem.setItemIsTempAdded("1");
 
         new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Are you sure?")

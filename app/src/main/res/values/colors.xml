@@ -9,4 +9,6 @@
     <color name="dark_gray">#757D75</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="faint_green">#E0F2F1</color>
+    <color name="faint_pink">#FFEBEE</color>
 </resources>

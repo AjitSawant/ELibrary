@@ -16,6 +16,7 @@ public class ELItem {
     private String ItemRemark;
     private String ItemAddedDate;
     private String ItemUpdateDate;
+    private String ItemIsTempAdded;
 
     @JsonProperty("ItemID")
     public String getItemID() {
@@ -114,5 +115,14 @@ public class ELItem {
 
     public void setItemUpdateDate(String itemUpdateDate) {
         ItemUpdateDate = itemUpdateDate;
+    }
+
+    @JsonProperty("ItemIsTempAdded")
+    public String getItemIsTempAdded() {
+        return ItemIsTempAdded;
+    }
+
+    public void setItemIsTempAdded(String itemIsTempAdded) {
+        ItemIsTempAdded = itemIsTempAdded;
     }
 }

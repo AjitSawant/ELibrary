@@ -213,4 +213,11 @@ public class LocalSetting {
         }
         return flag;
     }
+
+    public String currentTimeStamp() {
+        Boolean flag = false;
+        Long tsLong = System.currentTimeMillis()/1000;
+        String ts = tsLong.toString();
+        return ts;
+    }
 }
