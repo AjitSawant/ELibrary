@@ -11,8 +11,9 @@ public class ELItem {
     private String CatalogName;
     private String PageNo;
     private String IsMobileAttachment;
-    private String AttachmentData;
+    private byte[] AttachmentData;
     private String AttachmentName;
+    private String AttachmentFullPath;
     private String ItemRemark;
     private String ItemAddedDate;
     private String ItemUpdateDate;
@@ -73,11 +74,11 @@ public class ELItem {
     }
 
     @JsonProperty("AttachmentData")
-    public String getAttachmentData() {
+    public byte[] getAttachmentData() {
         return AttachmentData;
     }
 
-    public void setAttachmentData(String attachmentData) {
+    public void setAttachmentData(byte[] attachmentData) {
         AttachmentData = attachmentData;
     }
 
@@ -88,6 +89,15 @@ public class ELItem {
 
     public void setAttachmentName(String attachmentName) {
         AttachmentName = attachmentName;
+    }
+
+    @JsonProperty("AttachmentFullPath")
+    public String getAttachmentFullPath() {
+        return AttachmentFullPath;
+    }
+
+    public void setAttachmentFullPath(String attachmentFullPath) {
+        AttachmentFullPath = attachmentFullPath;
     }
 
     @JsonProperty("ItemRemark")

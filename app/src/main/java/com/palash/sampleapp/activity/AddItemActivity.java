@@ -1,6 +1,7 @@
 package com.palash.sampleapp.activity;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,6 +42,7 @@ import com.palash.sampleapp.utilities.TransparentProgressDialog;
 import com.squareup.okhttp.Response;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -67,11 +71,17 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     private EditText add_item_pageno_edt;
     private EditText item_remark_edt;
     private TextView selected_file_name;
-    private ImageView item_select_image_btn;
+    private TextView add_file_image_btn;
+    private TextView view_file_image_btn;
+    private TextView delete_file_image_btn;
 
     private String SelectedCatalogID = "0";
     private String SelectedCatalogName = "";
     private String OrderNumber = "";
+    private String AttachmentType = "0";
+    private String CurrentTimeStamp = "0";
+    private String AttachmentName = null;
+    private byte[] AttachmentData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,16 +112,21 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
             elLogin = elArrayLogin.get(0);
         }
         OrderNumber = getIntent().getStringExtra("OrderNumber");
+        CurrentTimeStamp = localSetting.currentTimeStamp();
     }
 
     private void InitView() {
         add_item_catalog_name_spinner = (MaterialSpinner) findViewById(R.id.add_item_catalog_name_spinner);
         add_item_pageno_edt = (EditText) findViewById(R.id.add_item_pageno_edt);
         item_remark_edt = (EditText) findViewById(R.id.item_remark_edt);
-        item_select_image_btn = (ImageView) findViewById(R.id.item_select_image_btn);
+        add_file_image_btn = (TextView) findViewById(R.id.add_file_image_btn);
+        view_file_image_btn = (TextView) findViewById(R.id.view_file_image_btn);
+        delete_file_image_btn = (TextView) findViewById(R.id.delete_file_image_btn);
         selected_file_name = (TextView) findViewById(R.id.selected_file_name);
 
-        item_select_image_btn.setOnClickListener(this);
+        add_file_image_btn.setOnClickListener(this);
+        view_file_image_btn.setOnClickListener(this);
+        delete_file_image_btn.setOnClickListener(this);
     }
 
     @Override
@@ -128,11 +143,30 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                 finish();
                 return true;
             case R.id.menu_toolbar_save:
-                bindData();
+                if (validate()) {
+                    bindData();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private boolean validate() {
+        if (SelectedCatalogID.equals("0")) {
+            Toast.makeText(context, "Please add catalog", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (add_item_pageno_edt.getText().toString().equals("") && add_item_pageno_edt.getText().toString().length() == 0) {
+            Toast.makeText(context, "Please add page number", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (item_remark_edt.getText().toString().equals("") && item_remark_edt.getText().toString().length() == 0) {
+            Toast.makeText(context, "Please add remark", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (selected_file_name.getText().toString().equals("") && selected_file_name.getText().toString().length() == 0) {
+            Toast.makeText(context, "Please add attachment", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     private void SetAdapter() {
@@ -166,11 +200,14 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     private void bindData() {
         elItem = new ELItem();
         elItem.setOrderNumber(OrderNumber);
-        elItem.setItemID(localSetting.currentTimeStamp());
+        elItem.setItemID(CurrentTimeStamp);
         elItem.setCatalogID(SelectedCatalogID);
         elItem.setCatalogName(SelectedCatalogName);
         elItem.setPageNo(add_item_pageno_edt.getText().toString());
-        elItem.setAttachmentName("Test.jpeg");
+        elItem.setAttachmentName(selected_file_name.getText().toString());
+        elItem.setAttachmentFullPath(AttachmentName);
+        elItem.setAttachmentData(AttachmentData);
+        elItem.setItemIsTempAdded(AttachmentType);
         elItem.setItemRemark(item_remark_edt.getText().toString());
         elItem.setItemAddedDate(localSetting.returnCurrentDate());
         elItem.setItemIsTempAdded("1");
@@ -199,9 +236,50 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.item_select_image_btn:
+            case R.id.add_file_image_btn:
                 selectImage();
                 break;
+            case R.id.view_file_image_btn:
+                viewAttachment();
+                break;
+            case R.id.delete_file_image_btn:
+                AttachmentType = "0";
+                AttachmentName = null;
+                AttachmentData = null;
+                selected_file_name.setText(null);
+                break;
+        }
+    }
+
+    private void viewAttachment() {
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        String mimeType = myMime.getMimeTypeFromExtension(fileExt(AttachmentName).substring(1));
+        newIntent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory(),AttachmentName)), mimeType);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            context.startActivity(newIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String fileExt(String url) {
+        if (url.indexOf("?") > -1) {
+            url = url.substring(0, url.indexOf("?"));
+        }
+        if (url.lastIndexOf(".") == -1) {
+            return null;
+        } else {
+            String ext = url.substring(url.lastIndexOf(".") + 1);
+            if (ext.indexOf("%") > -1) {
+                ext = ext.substring(0, ext.indexOf("%"));
+            }
+            if (ext.indexOf("/") > -1) {
+                ext = ext.substring(0, ext.indexOf("/"));
+            }
+            return ext.toLowerCase();
+
         }
     }
 
@@ -315,21 +393,23 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                             Cursor cursor = getContentResolver().query(selectedAttachment, filePathColumn, null, null, null);
                             cursor.moveToFirst();
 
-                            String AttachmentName = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
-                            byte[] AttachmentData = localSetting.getBytes(selectedAttachment, context);
+                            AttachmentName = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
+                            AttachmentData = localSetting.getBytes(selectedAttachment, context);
                             cursor.close();
 
-                            selected_file_name.setText(AttachmentName);
+                            selected_file_name.setText(CurrentTimeStamp + "." + localSetting.returnExtension(filePath));
+                            AttachmentType = "1";  // for gallary image
                         } catch (IOException e) {
                             e.printStackTrace();
                             Toast.makeText(context, "Something wrong..", Toast.LENGTH_SHORT).show();
                         }
                     } else if (filePath.contains(".pdf")) {
                         try {
-                            String AttachmentName = localSetting.fileNameFromURI(selectedAttachment, context);
-                            byte[] AttachmentData = localSetting.getBytes(selectedAttachment, context);
+                            AttachmentName = localSetting.fileNameFromURI(selectedAttachment, context);
+                            AttachmentData = localSetting.getBytes(selectedAttachment, context);
 
-                            selected_file_name.setText(AttachmentName);
+                            selected_file_name.setText(CurrentTimeStamp + "." + "pdf");
+                            AttachmentType = "2";  // for gallary document
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -345,10 +425,11 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                     try {
                         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
                         Uri selectedImage1 = Uri.parse(path);
-                        String AttachmentName = localSetting.fileNameFromURI(selectedImage1, context);
-                        byte[] AttachmentData = localSetting.getBytes(selectedImage1, context);
+                        AttachmentName = localSetting.fileNameFromURI(selectedImage1, context);
+                        AttachmentData = localSetting.getBytes(selectedImage1, context);
 
-                        selected_file_name.setText(AttachmentName);
+                        selected_file_name.setText(CurrentTimeStamp + "." + "jpg");
+                        AttachmentType = "3";  // for camera image
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(context, "Something wrong..", Toast.LENGTH_SHORT).show();

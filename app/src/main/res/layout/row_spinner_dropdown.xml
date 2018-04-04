@@ -15,7 +15,7 @@
         android:maxLines="1"
         android:singleLine="true"
         android:textColor="@color/text_color"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:visibility="gone" />
 
     <TextView
@@ -26,6 +26,6 @@
         android:gravity="left"
         android:paddingLeft="4dp"
         android:textColor="@color/text_color"
-        android:textSize="14sp" />
+        android:textSize="12sp" />
 </LinearLayout>
 

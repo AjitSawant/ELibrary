@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Base64;
+import android.util.Log;
 
 import com.buzzbox.mob.android.scheduler.SchedulerManager;
 import com.palash.sampleapp.R;
@@ -23,6 +24,7 @@ import com.palash.sampleapp.task.SynchronizationTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -89,6 +91,19 @@ public class LocalSetting {
         return result;
     }
 
+    public static String convertDate(String date) {
+        SimpleDateFormat spf=new SimpleDateFormat(Constants.DATE_TIME_FORMAT);
+        Date newDate= null;
+        try {
+            newDate = spf.parse(date);
+            spf= new SimpleDateFormat("dd MMM yyyy hh:mm aa");
+            date = spf.format(newDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
     public static boolean isNetworkAvailable(Context context) {
         boolean status = false;
         try {
@@ -136,14 +151,19 @@ public class LocalSetting {
         ArrayList<ELCatalog> ELCatalogArrayList = new ArrayList<>();
         ELCatalog ELCatalog1 = new ELCatalog();
         ELCatalog1.setID("0");
-        ELCatalog1.setDescription("Catalog1");
+        ELCatalog1.setDescription("Catalog Name 1");
 
         ELCatalog ELCatalog2 = new ELCatalog();
         ELCatalog2.setID("1");
-        ELCatalog2.setDescription("Catalog2");
+        ELCatalog2.setDescription("Catalog Name 2");
+
+        ELCatalog ELCatalog3 = new ELCatalog();
+        ELCatalog3.setID("2");
+        ELCatalog3.setDescription("Catalog Name 3");
 
         ELCatalogArrayList.add(ELCatalog1);
         ELCatalogArrayList.add(ELCatalog2);
+        ELCatalogArrayList.add(ELCatalog3);
 
         return ELCatalogArrayList;
     }
@@ -212,6 +232,18 @@ public class LocalSetting {
             }
         }
         return flag;
+    }
+
+    public String returnExtension(String fileName) {
+        String extension = "";
+        fileName = fileName.substring(fileName.lastIndexOf("."));
+        String[] okFileExtensions = new String[]{"jpg", "png", "gif", "jpeg"};
+        for (String exte : okFileExtensions) {
+            if (fileName.toLowerCase().endsWith(exte)) {
+                extension = exte;
+            }
+        }
+        return extension;
     }
 
     public String currentTimeStamp() {

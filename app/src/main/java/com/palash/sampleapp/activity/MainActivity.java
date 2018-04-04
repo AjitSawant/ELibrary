@@ -189,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_menu_add_order) {
             fragmentClass = AddOrderFragment.class;
         } else if (id == R.id.nav_menu_list_order) {
-            Constants.CURRENT_ORDER_TIME_STAMP = localSetting.currentTimeStamp();
             fragmentClass = OrderListFragment.class;
             //startActivity(new Intent(context, PhotoActivity.class));
         } else if (id == R.id.nav_menu_logout) {

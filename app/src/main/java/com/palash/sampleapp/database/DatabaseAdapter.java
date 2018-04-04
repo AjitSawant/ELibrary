@@ -464,6 +464,7 @@ public class DatabaseAdapter {
                 DatabaseContract.Item.COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT,
                 DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_DATA,
                 DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_NAME,
+                DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_FULL_PATH,
                 DatabaseContract.Item.COLUMN_NAME_ITEM_REMARK,
                 DatabaseContract.Item.COLUMN_NAME_ITEM_ADDED_DATE,
                 DatabaseContract.Item.COLUMN_NAME_IS_TEMP_ADDED,
@@ -483,6 +484,7 @@ public class DatabaseAdapter {
                     values.put(DatabaseContract.Item.COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT, elItem.getIsMobileAttachment());
                     values.put(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_DATA, elItem.getAttachmentData());
                     values.put(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_NAME, elItem.getAttachmentName());
+                    values.put(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_FULL_PATH, elItem.getAttachmentFullPath());
                     values.put(DatabaseContract.Item.COLUMN_NAME_ITEM_REMARK, elItem.getItemRemark());
                     values.put(DatabaseContract.Item.COLUMN_NAME_ITEM_ADDED_DATE, elItem.getItemAddedDate());
                     values.put(DatabaseContract.Item.COLUMN_NAME_ITEM_UPDATED_DATE, elItem.getItemUpdateDate());
@@ -507,8 +509,9 @@ public class DatabaseAdapter {
                         elItem.setCatalogName(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_CATALOG_NAME)));
                         elItem.setPageNo(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_PAGE_NO)));
                         elItem.setIsMobileAttachment(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT)));
-                        elItem.setAttachmentData(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_DATA)));
+                        elItem.setAttachmentData(result.getBlob(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_DATA)));
                         elItem.setAttachmentName(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_NAME)));
+                        elItem.setAttachmentFullPath(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ATTACHMENT_FULL_PATH)));
                         elItem.setItemRemark(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ITEM_REMARK)));
                         elItem.setItemAddedDate(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ITEM_ADDED_DATE)));
                         elItem.setItemUpdateDate(result.getString(result.getColumnIndex(DatabaseContract.Item.COLUMN_NAME_ITEM_UPDATED_DATE)));
@@ -635,162 +638,4 @@ public class DatabaseAdapter {
         }
     }
 
-    public class ItemTempAdapter {
-
-        String[] projection = {
-                DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ID,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_NUMBER,
-                DatabaseContract.ItemTemp.COLUMN_NAME_CATALOG_ID,
-                DatabaseContract.ItemTemp.COLUMN_NAME_CATALOG_NAME,
-                DatabaseContract.ItemTemp.COLUMN_NAME_PAGE_NO,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ATTACHMENT_DATA,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ATTACHMENT_NAME,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_REMARK,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ADDED_DATE,
-                DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_UPDATED_DATE
-        };
-
-        private ContentValues ItemTempToContentValues(ELItem elItemTemp) {
-            ContentValues values = null;
-            try {
-                if (elItemTemp != null) {
-                    values = new ContentValues();
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ID, elItemTemp.getItemID());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_NUMBER, elItemTemp.getOrderNumber());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_CATALOG_ID, elItemTemp.getCatalogID());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_CATALOG_NAME, elItemTemp.getCatalogName());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_PAGE_NO, elItemTemp.getPageNo());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT, elItemTemp.getIsMobileAttachment());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ATTACHMENT_DATA, elItemTemp.getAttachmentData());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ATTACHMENT_NAME, elItemTemp.getAttachmentName());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_REMARK, elItemTemp.getItemRemark());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ADDED_DATE, elItemTemp.getItemAddedDate());
-                    values.put(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_UPDATED_DATE, elItemTemp.getItemUpdateDate());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return values;
-        }
-
-        private ArrayList<ELItem> CursorToArrayList(Cursor result) {
-            ArrayList<ELItem> listItemTemp = null;
-            try {
-                if (result != null) {
-                    listItemTemp = new ArrayList<ELItem>();
-                    while (result.moveToNext()) {
-                        ELItem elItemTemp = new ELItem();
-                        elItemTemp.setItemID(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ID)));
-                        elItemTemp.setOrderNumber(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_NUMBER)));
-                        elItemTemp.setCatalogID(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_CATALOG_ID)));
-                        elItemTemp.setCatalogName(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_CATALOG_NAME)));
-                        elItemTemp.setPageNo(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_PAGE_NO)));
-                        elItemTemp.setIsMobileAttachment(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT)));
-                        elItemTemp.setAttachmentData(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ATTACHMENT_DATA)));
-                        elItemTemp.setAttachmentName(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ATTACHMENT_NAME)));
-                        elItemTemp.setItemRemark(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_REMARK)));
-                        elItemTemp.setItemAddedDate(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ADDED_DATE)));
-                        elItemTemp.setItemUpdateDate(result.getString(result.getColumnIndex(DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_UPDATED_DATE)));
-                        listItemTemp.add(elItemTemp);
-                    }
-                    result.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return listItemTemp;
-        }
-
-        public long create(ELItem elItemTemp) {
-            long rowId = -1;
-            try {
-                ContentValues values = ItemTempToContentValues(elItemTemp);
-                if (values != null) {
-                    if (CountByID(elItemTemp.getItemID()) == 0) {
-                        rowId = databaseContract.open().insert(DatabaseContract.ItemTemp.TABLE_NAME, null, values);
-                    } else {
-                        Update(elItemTemp);
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                databaseContract.close();
-            }
-            return rowId;
-        }
-
-        public long Update(ELItem elItemTemp) {
-            long res = 0;
-            try {
-                ContentValues values = ItemTempToContentValues(elItemTemp);
-                if (values != null) {
-                    String WhereClause = DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ID + "=" + elItemTemp.getItemID();
-                    res = databaseContract.open().update(DatabaseContract.ItemTemp.TABLE_NAME, values, WhereClause, null);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                close();
-            }
-            return res;
-        }
-
-        public int CountByID(String ID) {
-            int res = 0;
-            ArrayList<ELItem> list = listAllID(ID);
-            if (list != null) {
-                res = list.size();
-            }
-            return res;
-        }
-
-        public ArrayList<ELItem> listAll() {
-            ArrayList<ELItem> listItemTemp = null;
-            Cursor result = null;
-            try {
-                SQLiteDatabase db = databaseContract.open();
-                result = db.query(DatabaseContract.ItemTemp.TABLE_NAME, projection, null, null, null, null, null);
-                listItemTemp = CursorToArrayList(result);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return listItemTemp;
-        }
-
-        public ArrayList<ELItem> listAllID(String ItemTempID) {
-            ArrayList<ELItem> objELItemTemps = new ArrayList<ELItem>();
-            Cursor result = null;
-            try {
-                String WhereClause = DatabaseContract.ItemTemp.COLUMN_NAME_ORDER_NUMBER + "='" + ItemTempID + "'";
-                result = databaseContract.open().query(DatabaseContract.ItemTemp.TABLE_NAME, projection, WhereClause, null, null, null, null);
-                objELItemTemps = CursorToArrayList(result);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return objELItemTemps;
-        }
-
-        public void delete() {
-            try {
-                SQLiteDatabase db = databaseContract.open();
-                db.delete(DatabaseContract.ItemTemp.TABLE_NAME, null, null);
-                db.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void deleteItemTemp(String ItemTempID) {
-            try {
-                String WhereClause = DatabaseContract.ItemTemp.COLUMN_NAME_ITEM_ID + "='" + ItemTempID + "'";
-                SQLiteDatabase db = databaseContract.open();
-                db.delete(DatabaseContract.ItemTemp.TABLE_NAME, WhereClause, null);
-                db.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

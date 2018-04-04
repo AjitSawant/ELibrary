@@ -121,7 +121,7 @@ public class OrderExpListAdapter extends BaseExpandableListAdapter {
         TextView row_item_delete = (TextView) convertView.findViewById(R.id.row_item_delete);
 
         row_item_order_number.setText("Item ID : " + elItem.getItemID());
-        row_item_date.setText(elItem.getItemAddedDate());
+        row_item_date.setText(localSetting.convertDate(elItem.getItemAddedDate()));
         row_item_catelog_name.setText(elItem.getCatalogName());
         row_item_file_name.setText(elItem.getAttachmentName());
         row_item_remark.setText(elItem.getItemRemark());

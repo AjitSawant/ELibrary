@@ -82,7 +82,7 @@ public class ItemListAdapter extends BaseAdapter {
                 holder = (ViewHolder) convertView.getTag();
             }
             holder.row_item_order_number.setText("Item ID : " + elItemArrayList.get(position).getItemID());
-            holder.row_item_date.setText(elItemArrayList.get(position).getItemAddedDate());
+            holder.row_item_date.setText(localSetting.convertDate(elItemArrayList.get(position).getItemAddedDate()));
             holder.row_item_catelog_name.setText(elItemArrayList.get(position).getCatalogName());
             holder.row_item_file_name.setText(elItemArrayList.get(position).getAttachmentName());
             holder.row_item_remark.setText(elItemArrayList.get(position).getItemRemark());

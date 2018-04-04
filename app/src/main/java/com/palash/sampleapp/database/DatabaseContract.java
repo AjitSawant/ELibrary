@@ -115,6 +115,7 @@ public class DatabaseContract {
         public static final String COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT = "IsMobileAttachment";
         public static final String COLUMN_NAME_ATTACHMENT_DATA = "AttachmentData";
         public static final String COLUMN_NAME_ATTACHMENT_NAME = "AttachmentName";
+        public static final String COLUMN_NAME_ATTACHMENT_FULL_PATH = "AttachmentFullPath";
         public static final String COLUMN_NAME_ITEM_REMARK = "ItemRemark";
         public static final String COLUMN_NAME_ITEM_ADDED_DATE = "ItemAddedDate";
         public static final String COLUMN_NAME_ITEM_UPDATED_DATE = "ItemUpdateDate";
@@ -140,6 +141,8 @@ public class DatabaseContract {
                 + " TEXT,"
                 + COLUMN_NAME_ATTACHMENT_NAME
                 + " TEXT,"
+                + COLUMN_NAME_ATTACHMENT_FULL_PATH
+                + " TEXT,"
                 + COLUMN_NAME_ITEM_REMARK
                 + " TEXT,"
                 + COLUMN_NAME_ITEM_ADDED_DATE
@@ -147,54 +150,6 @@ public class DatabaseContract {
                 + COLUMN_NAME_ITEM_UPDATED_DATE
                 + " TEXT,"
                 + COLUMN_NAME_IS_TEMP_ADDED
-                + " TEXT"
-                + ")";
-    }
-
-    public static final class ItemTemp implements BaseColumns {
-
-        private ItemTemp() {
-        }
-
-        public static final String TABLE_NAME = "T_ItemTemp";
-
-        public static final String COLUMN_NAME_ITEM_ID = "ItemID";
-        public static final String COLUMN_NAME_ORDER_NUMBER = "OrderNumber";
-        public static final String COLUMN_NAME_CATALOG_ID = "CatalogID";
-        public static final String COLUMN_NAME_CATALOG_NAME = "CatalogName";
-        public static final String COLUMN_NAME_PAGE_NO = "PageNo";
-        public static final String COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT = "IsMobileAttachment";
-        public static final String COLUMN_NAME_ATTACHMENT_DATA = "AttachmentData";
-        public static final String COLUMN_NAME_ATTACHMENT_NAME = "AttachmentName";
-        public static final String COLUMN_NAME_ITEM_REMARK = "ItemRemark";
-        public static final String COLUMN_NAME_ITEM_ADDED_DATE = "ItemAddedDate";
-        public static final String COLUMN_NAME_ITEM_UPDATED_DATE = "ItemUpdateDate";
-
-        static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME
-                + "("
-                + ItemTemp._ID
-                + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                + COLUMN_NAME_ITEM_ID
-                + " TEXT,"
-                + COLUMN_NAME_ORDER_NUMBER
-                + " TEXT,"
-                + COLUMN_NAME_CATALOG_ID
-                + " TEXT,"
-                + COLUMN_NAME_CATALOG_NAME
-                + " TEXT,"
-                + COLUMN_NAME_PAGE_NO
-                + " TEXT,"
-                + COLUMN_NAME_ORDER_IS_MOBILE_ATTACHMENT
-                + " TEXT,"
-                + COLUMN_NAME_ATTACHMENT_DATA
-                + " TEXT,"
-                + COLUMN_NAME_ATTACHMENT_NAME
-                + " TEXT,"
-                + COLUMN_NAME_ITEM_REMARK
-                + " TEXT,"
-                + COLUMN_NAME_ITEM_ADDED_DATE
-                + " TEXT,"
-                + COLUMN_NAME_ITEM_UPDATED_DATE
                 + " TEXT"
                 + ")";
     }
