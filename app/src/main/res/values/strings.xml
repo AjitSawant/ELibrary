@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InamdarApp</string>
+    <string name="app_name">E-Store</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -15,9 +15,11 @@
     <string name="add_item">Add Item</string>
     <string name="catelog_name">Catalog Name</string>
 
+    <string name="display_image">Attachment</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="no_item">No Item Added.</string>
     <string name="no_order">No Order Added.</string>
+    <string name="opps_alert">Oops...</string>
 
 
     <string name="hello_blank_fragment">Hello blank fragment</string>

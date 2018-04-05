@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.palash.sampleapp.R;
 import com.palash.sampleapp.activity.AddItemActivity;
 import com.palash.sampleapp.activity.MainActivity;
+import com.palash.sampleapp.activity.RefreshViewInterface;
 import com.palash.sampleapp.adapter.ItemListAdapter;
 import com.palash.sampleapp.api.JsonObjectMapper;
 import com.palash.sampleapp.api.WebServiceConsumer;
@@ -57,6 +59,7 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
     private LinearLayout item_no_data;
 
     private ItemListAdapter itemListAdapter;
+    private RefreshViewInterface refreshViewInterface;
 
     private String OrderNumber = "1001";
 
@@ -135,7 +138,10 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_add_new_item:
-                startActivity(new Intent(context, AddItemActivity.class).putExtra("OrderNumber",OrderNumber));
+                startActivity(new Intent(context, AddItemActivity.class)
+                        .putExtra("OrderNumber", OrderNumber)
+                        .putExtra("ItemID", "0")
+                        .putExtra("from", "AddOrder"));
                 break;
             case R.id.button_add_order:
                 bindList();
@@ -148,25 +154,31 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
         elOrder.setOrderNumber(OrderNumber);
         elOrder.setOrderAddedDate(localSetting.returnCurrentDate());
 
-        new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                .setTitleText("Are you sure?")
-                .setContentText("Do you really want to add this order!")
-                .setConfirmText("Yes")
-                .setCancelText("No")
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.dismissWithAnimation();
-                        new AddOrderTask().execute();
-                    }
-                })
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.dismissWithAnimation();
-                    }
-                })
-                .show();
+        ArrayList<ELItem> elItemArrayList = itemAdapterDB.listAll();
+        if (elItemArrayList != null && elItemArrayList.size() > 0) {
+
+            new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("Are you sure?")
+                    .setContentText("Do you really want to add this order!")
+                    .setConfirmText("Yes")
+                    .setCancelText("No")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            sDialog.dismissWithAnimation();
+                            new AddOrderTask().execute();
+                        }
+                    })
+                    .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sDialog) {
+                            sDialog.dismissWithAnimation();
+                        }
+                    })
+                    .show();
+        } else {
+            Toast.makeText(context, "Please Add Item", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public class AddOrderTask extends AsyncTask<Void, Void, String> {
@@ -221,13 +233,19 @@ public class AddOrderFragment extends Fragment implements View.OnClickListener {
                             item_list.setVisibility(View.GONE);
                             item_no_data.setVisibility(View.VISIBLE);
                             itemAdapterDB.UpdateByOrderID(OrderNumber);
-                            MainActivity main = new MainActivity();
-                            main.ShowOrderList();
+
+                            resetOrderNumber();
                         }
                     })
                     .show();
-
             super.onPostExecute(result);
         }
+    }
+
+    private void resetOrderNumber() {
+        OrderNumber = localSetting.currentTimeStamp();
+        order_number_txt.setText("Order Number : " + OrderNumber);
+        MainActivity main = new MainActivity();
+        main.onRefresh();
     }
 }

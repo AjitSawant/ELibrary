@@ -531,7 +531,7 @@ public class DatabaseAdapter {
             try {
                 ContentValues values = ItemToContentValues(elItem);
                 if (values != null) {
-                    if (CountByID(elItem.getItemID()) == 0) {
+                    if (CountByItemID(elItem.getItemID()) == 0) {
                         rowId = databaseContract.open().insert(DatabaseContract.Item.TABLE_NAME, null, values);
                     } else {
                         Update(elItem);
@@ -577,14 +577,15 @@ public class DatabaseAdapter {
             return rowId;
         }
 
-        public int CountByID(String ID) {
+        public int CountByItemID(String ID) {
             int res = 0;
-            ArrayList<ELItem> list = listAllID(ID);
+            ArrayList<ELItem> list = listAllItemID(ID);
             if (list != null) {
                 res = list.size();
             }
             return res;
         }
+
 
         // list on add order screen
         public ArrayList<ELItem> listAll() {
@@ -616,6 +617,19 @@ public class DatabaseAdapter {
             return objELItems;
         }
 
+        public ArrayList<ELItem> listAllItemID(String ItemID) {
+            ArrayList<ELItem> objELItems = new ArrayList<ELItem>();
+            Cursor result = null;
+            try {
+                String WhereClause = DatabaseContract.Item.COLUMN_NAME_ITEM_ID + "='" + ItemID + "'" ;
+                result = databaseContract.open().query(DatabaseContract.Item.TABLE_NAME, projection, WhereClause, null, null, null, null);
+                objELItems = CursorToArrayList(result);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return objELItems;
+        }
+
         public void delete() {
             try {
                 SQLiteDatabase db = databaseContract.open();
@@ -636,6 +650,16 @@ public class DatabaseAdapter {
                 e.printStackTrace();
             }
         }
-    }
 
+        public void deleteTempItem() {
+            try {
+                String WhereClause = DatabaseContract.Item.COLUMN_NAME_IS_TEMP_ADDED + "='" + 1 + "'";
+                SQLiteDatabase db = databaseContract.open();
+                db.delete(DatabaseContract.Item.TABLE_NAME, WhereClause, null);
+                db.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

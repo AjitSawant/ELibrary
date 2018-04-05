@@ -195,17 +195,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         protected void onPostExecute(String result) {
             localSetting.hideDialog(progressDialog);
 
-            Log.d("cll","");
-            RememberMe = login_cb_remember_me.isChecked();
-            elLogin.setUserId("1");
-            elLogin.setFullName("Ajit Sawant");
-            elLogin.setLoginName(Username);
-            elLogin.setPassword(Password);
-            elLogin.setRememberMe(String.valueOf(RememberMe));
-            elLogin.setLoginStatus(Constants.STATUS_LOG_IN);
-            loginAdapter.delete();
-            loginAdapter.create(elLogin);
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            if(Username.equals("Test")&& Password.equals("test@123")){
+                Log.d("cll","");
+                RememberMe = login_cb_remember_me.isChecked();
+                elLogin.setUserId("1");
+                elLogin.setFullName("Ajit Sawant");
+                elLogin.setLoginName(Username);
+                elLogin.setPassword(Password);
+                elLogin.setRememberMe(String.valueOf(RememberMe));
+                elLogin.setLoginStatus(Constants.STATUS_LOG_IN);
+                loginAdapter.delete();
+                loginAdapter.create(elLogin);
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            }else{
+                localSetting.showErrorAlert(context,context.getResources().getString(R.string.opps_alert),"User not found. Please enter correct credentials");
+            }
 
             /*try {
                 if (responseCode == Constants.HTTP_OK_200) {

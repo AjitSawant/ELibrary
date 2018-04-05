@@ -47,7 +47,6 @@ public class SplashActivity extends AppCompatActivity {
     private void Init() {
         try {
             context = this;
-            getSupportActionBar().hide();
             databaseContract = new DatabaseContract(context);
             databaseAdapter = new DatabaseAdapter(databaseContract);
             loginAdapter = databaseAdapter.new LoginAdapter();

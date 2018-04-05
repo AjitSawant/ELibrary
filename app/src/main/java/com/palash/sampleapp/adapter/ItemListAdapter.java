@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buzzbox.mob.android.scheduler.SchedulerManager;
 import com.palash.sampleapp.R;
+import com.palash.sampleapp.activity.AddItemActivity;
 import com.palash.sampleapp.activity.LoginActivity;
+import com.palash.sampleapp.activity.ViewImageActivity;
 import com.palash.sampleapp.database.DatabaseAdapter;
 import com.palash.sampleapp.database.DatabaseContract;
 import com.palash.sampleapp.entiry.ELCatalog;
@@ -81,11 +84,21 @@ public class ItemListAdapter extends BaseAdapter {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.row_item_order_number.setText("Item ID : " + elItemArrayList.get(position).getItemID());
-            holder.row_item_date.setText(localSetting.convertDate(elItemArrayList.get(position).getItemAddedDate()));
-            holder.row_item_catelog_name.setText(elItemArrayList.get(position).getCatalogName());
-            holder.row_item_file_name.setText(elItemArrayList.get(position).getAttachmentName());
-            holder.row_item_remark.setText(elItemArrayList.get(position).getItemRemark());
+            ELItem elItem = elItemArrayList.get(position);
+
+            holder.row_item_order_number.setText("Item ID : " + elItem.getItemID());
+            holder.row_item_date.setText(localSetting.convertDate(elItem.getItemAddedDate()));
+            holder.row_item_catelog_name.setText(elItem.getCatalogName());
+            holder.row_item_file_name.setText(elItem.getAttachmentName());
+            holder.row_item_remark.setText(elItem.getItemRemark());
+
+            if (elItem.getIsMobileAttachment() != null && elItem.getIsMobileAttachment().length() > 0 && elItem.getIsMobileAttachment().equals("1")) {
+                holder.row_item_file_type.setImageResource(R.drawable.ic_gallary_image);
+            } else if (elItem.getIsMobileAttachment() != null && elItem.getIsMobileAttachment().length() > 0 && elItem.getIsMobileAttachment().equals("2")) {
+                holder.row_item_file_type.setImageResource(R.drawable.ic_document_logo);
+            } else if (elItem.getIsMobileAttachment() != null && elItem.getIsMobileAttachment().length() > 0 && elItem.getIsMobileAttachment().equals("3")) {
+                holder.row_item_file_type.setImageResource(R.drawable.ic_camera_logo);
+            }
 
             holder.row_item_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,6 +123,31 @@ public class ItemListAdapter extends BaseAdapter {
                                 }
                             })
                             .show();
+                }
+            });
+
+            holder.row_item_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final ELItem elItem = elItemArrayList.get(position);
+                    if (elItem.getItemID() != null && elItem.getItemID().length() > 0 && (elItem.getIsMobileAttachment().equals("1") || elItem.getIsMobileAttachment().equals("3"))) {
+                        context.startActivity(new Intent(context, ViewImageActivity.class).putExtra("ItemID", elItem.getItemID()));
+                    }else{
+                        Toast.makeText(context,"Pdf display comming soon..",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final ELItem elItem = elItemArrayList.get(position);
+                    if (elItem.getItemID() != null && elItem.getItemID().length() > 0) {
+                        context.startActivity(new Intent(context, AddItemActivity.class)
+                                .putExtra("OrderNumber", elItem.getOrderNumber())
+                                .putExtra("ItemID",elItem.getItemID())
+                                .putExtra("from","AddOrder"));
+                    }
                 }
             });
         } catch (Exception e) {

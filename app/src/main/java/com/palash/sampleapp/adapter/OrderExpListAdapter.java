@@ -1,6 +1,7 @@
 package com.palash.sampleapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +9,11 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.palash.sampleapp.R;
+import com.palash.sampleapp.activity.AddItemActivity;
+import com.palash.sampleapp.activity.ViewImageActivity;
 import com.palash.sampleapp.entiry.ELItem;
 import com.palash.sampleapp.utilities.LocalSetting;
 
@@ -88,7 +92,7 @@ public class OrderExpListAdapter extends BaseExpandableListAdapter {
         ImageView group_indicator = (ImageView) convertView.findViewById(R.id.group_indicator);
         try {
             List<String> elHeaderData = Arrays.asList(groupText.split(",.,"));
-            row_item_order_number.setText("Order Number " + elHeaderData.get(1));
+            row_item_order_number.setText("Order Number : " + elHeaderData.get(1));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,7 +106,7 @@ public class OrderExpListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, final int childPosition,
+    public View getChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         ELItem elItem = (ELItem) getChild(groupPosition, childPosition);
@@ -125,6 +129,41 @@ public class OrderExpListAdapter extends BaseExpandableListAdapter {
         row_item_catelog_name.setText(elItem.getCatalogName());
         row_item_file_name.setText(elItem.getAttachmentName());
         row_item_remark.setText(elItem.getItemRemark());
+
+        if (elItem.getIsMobileAttachment() != null && elItem.getIsMobileAttachment().length() > 0 && elItem.getIsMobileAttachment().equals("1")) {
+            row_item_file_type.setImageResource(R.drawable.ic_gallary_image);
+        } else if (elItem.getIsMobileAttachment() != null && elItem.getIsMobileAttachment().length() > 0 && elItem.getIsMobileAttachment().equals("2")) {
+            row_item_file_type.setImageResource(R.drawable.ic_document_logo);
+        } else if (elItem.getIsMobileAttachment() != null && elItem.getIsMobileAttachment().length() > 0 && elItem.getIsMobileAttachment().equals("3")) {
+            row_item_file_type.setImageResource(R.drawable.ic_camera_logo);
+        }
+
+        row_item_delete.setVisibility(View.GONE);
+
+        row_item_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ELItem elItem = (ELItem) getChild(groupPosition, childPosition);
+                if (elItem.getItemID() != null && elItem.getItemID().length() > 0 && (elItem.getIsMobileAttachment().equals("1") || elItem.getIsMobileAttachment().equals("3"))) {
+                    context.startActivity(new Intent(context, ViewImageActivity.class).putExtra("ItemID", elItem.getItemID()));
+                }else{
+                    Toast.makeText(context,"Pdf display comming soon..",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ELItem elItem = (ELItem) getChild(groupPosition, childPosition);
+                if (elItem.getItemID() != null && elItem.getItemID().length() > 0) {
+                    context.startActivity(new Intent(context, AddItemActivity.class)
+                            .putExtra("OrderNumber", elItem.getOrderNumber())
+                            .putExtra("ItemID", elItem.getItemID())
+                            .putExtra("from","ListOrder"));
+                }
+            }
+        });
 
         return convertView;
     }

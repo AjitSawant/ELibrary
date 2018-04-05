@@ -87,12 +87,12 @@ public class OrderListFragment extends Fragment {
         order_explist.setVisibility(View.GONE);
         order_no_data.setVisibility(View.VISIBLE);
 
-        setOrderData();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        setOrderData();
     }
 
     private void setOrderData() {
@@ -138,6 +138,7 @@ public class OrderListFragment extends Fragment {
 
                     order_no_data.setVisibility(View.GONE);
                     order_explist.setVisibility(View.VISIBLE);
+                    order_explist.expandGroup(0);
                 } else {
                     order_explist.setVisibility(View.GONE);
                     order_no_data.setVisibility(View.VISIBLE);

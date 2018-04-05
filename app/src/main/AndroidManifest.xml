@@ -70,6 +70,10 @@
             android:label="@string/add_item"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity android:name=".activity.ViewImageActivity"
+            android:label="@string/display_image"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
     </application>
 
 </manifest>

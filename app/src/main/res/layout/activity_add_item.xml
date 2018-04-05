@@ -24,7 +24,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="2dp"
                 android:gravity="center_vertical"
-                android:text="Category L1"
+                android:text="Catalog"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -233,7 +233,7 @@
                         android:gravity="center"
                         android:text="View"
                         android:textColor="@color/white"
-
+                        android:visibility="gone"
                         android:textSize="12sp" />
 
                     <TextView

@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,6 +40,7 @@ import com.palash.sampleapp.entiry.ELLogin;
 import com.palash.sampleapp.utilities.Constants;
 import com.palash.sampleapp.utilities.LocalSetting;
 import com.palash.sampleapp.utilities.TransparentProgressDialog;
+import com.palash.sampleapp.utilities.Utility;
 import com.squareup.okhttp.Response;
 
 import java.io.ByteArrayOutputStream;
@@ -64,6 +66,7 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     private ELItem elItem;
     private ArrayList<ELLogin> elArrayLogin;
     private ArrayList<ELCatalog> elArrayListCatalog;
+    private ArrayList<ELItem> elItemArrayList;
 
     private CatalogListAdapter catalogListAdapter;
 
@@ -79,9 +82,12 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     private String SelectedCatalogName = "";
     private String OrderNumber = "";
     private String AttachmentType = "0";
-    private String CurrentTimeStamp = "0";
-    private String AttachmentName = null;
+    private String ItemID = "";
+    private String AttachmentFullPath = null;
     private byte[] AttachmentData = null;
+    private String userChoosenTask;
+    private Boolean isUpdate = false;
+    private String isFrom = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +96,37 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
         init();
         InitView();
         SetAdapter();
+
+        ItemID = getIntent().getStringExtra("ItemID");
+        isFrom = getIntent().getStringExtra("from");
+        if (ItemID.equals("0")) {
+            OrderNumber = getIntent().getStringExtra("OrderNumber");
+            ItemID = localSetting.currentTimeStamp();
+            isUpdate = false;
+        } else {
+            setUpdateData();
+            isUpdate = true;
+        }
+    }
+
+    private void setUpdateData() {
+        elItemArrayList = itemAdapterDB.listAllItemID(ItemID);
+        if (elItemArrayList != null && elItemArrayList.size() > 0) {
+            elItem = elItemArrayList.get(0);
+
+            OrderNumber = elItem.getOrderNumber();
+            ItemID = elItem.getItemID();
+            SelectedCatalogID = elItem.getCatalogID();
+            SelectedCatalogName = elItem.getCatalogName();
+            AttachmentType = elItem.getIsMobileAttachment();
+            AttachmentFullPath = elItem.getAttachmentFullPath();
+            AttachmentData = elItem.getAttachmentData();
+            add_item_pageno_edt.setText(elItem.getPageNo());
+            item_remark_edt.setText(elItem.getItemRemark());
+            selected_file_name.setText(elItem.getAttachmentName());
+
+            add_item_catalog_name_spinner.setSelection(Integer.parseInt(elItem.getCatalogID()));
+        }
     }
 
     private void init() {
@@ -111,8 +148,6 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
         if (elArrayLogin != null && elArrayLogin.size() > 0) {
             elLogin = elArrayLogin.get(0);
         }
-        OrderNumber = getIntent().getStringExtra("OrderNumber");
-        CurrentTimeStamp = localSetting.currentTimeStamp();
     }
 
     private void InitView() {
@@ -200,21 +235,32 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
     private void bindData() {
         elItem = new ELItem();
         elItem.setOrderNumber(OrderNumber);
-        elItem.setItemID(CurrentTimeStamp);
+        elItem.setItemID(ItemID);
         elItem.setCatalogID(SelectedCatalogID);
         elItem.setCatalogName(SelectedCatalogName);
         elItem.setPageNo(add_item_pageno_edt.getText().toString());
         elItem.setAttachmentName(selected_file_name.getText().toString());
-        elItem.setAttachmentFullPath(AttachmentName);
+        elItem.setAttachmentFullPath(AttachmentFullPath);
         elItem.setAttachmentData(AttachmentData);
-        elItem.setItemIsTempAdded(AttachmentType);
+        elItem.setIsMobileAttachment(AttachmentType);
         elItem.setItemRemark(item_remark_edt.getText().toString());
         elItem.setItemAddedDate(localSetting.returnCurrentDate());
-        elItem.setItemIsTempAdded("1");
 
+        if (isFrom.equals("ListOrder")) {
+            elItem.setItemIsTempAdded("0");
+        } else {
+            elItem.setItemIsTempAdded("1");
+        }
+
+        String msg;
+        if (isUpdate) {
+            msg = "Do you really want to update this item!";
+        } else {
+            msg = "Do you really want to add this item!";
+        }
         new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
                 .setTitleText("Are you sure?")
-                .setContentText("Do you really want to add this item!")
+                .setContentText(msg)
                 .setConfirmText("Yes")
                 .setCancelText("No")
                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -240,46 +286,13 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                 selectImage();
                 break;
             case R.id.view_file_image_btn:
-                viewAttachment();
                 break;
             case R.id.delete_file_image_btn:
                 AttachmentType = "0";
-                AttachmentName = null;
+                AttachmentFullPath = null;
                 AttachmentData = null;
                 selected_file_name.setText(null);
                 break;
-        }
-    }
-
-    private void viewAttachment() {
-        MimeTypeMap myMime = MimeTypeMap.getSingleton();
-        Intent newIntent = new Intent(Intent.ACTION_VIEW);
-        String mimeType = myMime.getMimeTypeFromExtension(fileExt(AttachmentName).substring(1));
-        newIntent.setDataAndType(Uri.fromFile(new File(Environment.getExternalStorageDirectory(),AttachmentName)), mimeType);
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            context.startActivity(newIntent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private String fileExt(String url) {
-        if (url.indexOf("?") > -1) {
-            url = url.substring(0, url.indexOf("?"));
-        }
-        if (url.lastIndexOf(".") == -1) {
-            return null;
-        } else {
-            String ext = url.substring(url.lastIndexOf(".") + 1);
-            if (ext.indexOf("%") > -1) {
-                ext = ext.substring(0, ext.indexOf("%"));
-            }
-            if (ext.indexOf("/") > -1) {
-                ext = ext.substring(0, ext.indexOf("/"));
-            }
-            return ext.toLowerCase();
-
         }
     }
 
@@ -323,9 +336,16 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
         protected void onPostExecute(String result) {
             localSetting.hideDialog(progressDialog);
             itemAdapterDB.create(elItem);
+
+            String msg;
+            if (isUpdate) {
+                msg = "Item Updated Successfully";
+            } else {
+                msg = "Item Added Successfully";
+            }
             new SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE)
                     .setTitleText(context.getResources().getString(R.string.app_name))
-                    .setContentText("Item Added Successfully")
+                    .setContentText(msg)
                     .setConfirmText("OK")
                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
@@ -335,47 +355,61 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     })
                     .show();
-
             super.onPostExecute(result);
         }
     }
 
-    private void selectImage() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case Utility.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (userChoosenTask.equals("Take Photo"))
+                        cameraIntent();
+                    else if (userChoosenTask.equals("Choose from Library"))
+                        galleryIntent();
+                } else {
+                    //code for deny
+                }
+                break;
+        }
+    }
 
-        final CharSequence[] options = {"Take Photo", "Choose from Gallery", "Cancel"};
+    private void selectImage() {
+        final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Add Photo!");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
+        builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                if (options[item].equals("Take Photo")) {
-                    boolean isMarsh = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-                    if (isMarsh) {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(intent, 2);
-                    } else {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(intent, 2);
-                    }
-                } else if (options[item].equals("Choose from Gallery")) {
-                    boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-                    if (isKitKat) {
-                        Intent intent = new Intent();
-                        intent.setType("*/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(intent, 1);
-                    } else {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("*/*");
-                        startActivityForResult(intent, 1);
-                    }
-                } else if (options[item].equals("Cancel")) {
+                boolean result = Utility.checkPermission(context);
+                if (items[item].equals("Take Photo")) {
+                    userChoosenTask = "Take Photo";
+                    if (result)
+                        cameraIntent();
+                } else if (items[item].equals("Choose from Library")) {
+                    userChoosenTask = "Choose from Library";
+                    if (result)
+                        galleryIntent();
+                } else if (items[item].equals("Cancel")) {
                     dialog.dismiss();
                 }
             }
         });
         builder.show();
+    }
+
+    private void galleryIntent() {
+        Intent intent = new Intent();
+        intent.setType("*/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 1);
+    }
+
+    private void cameraIntent() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 2);
     }
 
     @Override
@@ -393,11 +427,11 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                             Cursor cursor = getContentResolver().query(selectedAttachment, filePathColumn, null, null, null);
                             cursor.moveToFirst();
 
-                            AttachmentName = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
+                            AttachmentFullPath = cursor.getString(cursor.getColumnIndex(filePathColumn[0]));
                             AttachmentData = localSetting.getBytes(selectedAttachment, context);
                             cursor.close();
 
-                            selected_file_name.setText(CurrentTimeStamp + "." + localSetting.returnExtension(filePath));
+                            selected_file_name.setText(ItemID + "." + localSetting.returnExtension(filePath));
                             AttachmentType = "1";  // for gallary image
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -405,10 +439,10 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     } else if (filePath.contains(".pdf")) {
                         try {
-                            AttachmentName = localSetting.fileNameFromURI(selectedAttachment, context);
+                            AttachmentFullPath = localSetting.fileNameFromURI(selectedAttachment, context);
                             AttachmentData = localSetting.getBytes(selectedAttachment, context);
 
-                            selected_file_name.setText(CurrentTimeStamp + "." + "pdf");
+                            selected_file_name.setText(ItemID + "." + "pdf");
                             AttachmentType = "2";  // for gallary document
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -425,10 +459,10 @@ public class AddItemActivity extends AppCompatActivity implements View.OnClickLi
                     try {
                         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
                         Uri selectedImage1 = Uri.parse(path);
-                        AttachmentName = localSetting.fileNameFromURI(selectedImage1, context);
+                        AttachmentFullPath = localSetting.fileNameFromURI(selectedImage1, context);
                         AttachmentData = localSetting.getBytes(selectedImage1, context);
 
-                        selected_file_name.setText(CurrentTimeStamp + "." + "jpg");
+                        selected_file_name.setText(ItemID + "." + "jpg");
                         AttachmentType = "3";  // for camera image
                     } catch (IOException e) {
                         e.printStackTrace();

@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,13 +37,14 @@ import java.util.ArrayList;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RefreshViewInterface {
 
     private Context context;
     private LocalSetting localSetting;
     private DatabaseContract databaseContract;
     private DatabaseAdapter databaseAdapter;
     private DatabaseAdapter.LoginAdapter loginAdapter;
+    private DatabaseAdapter.ItemAdapter itemAdapterDB;
 
     private ArrayList<ELLogin> listLogin;
 
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             databaseContract = new DatabaseContract(context);
             databaseAdapter = new DatabaseAdapter(databaseContract);
             loginAdapter = databaseAdapter.new LoginAdapter();
+            itemAdapterDB = databaseAdapter.new ItemAdapter();
             listLogin = loginAdapter.listAll();
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,10 +190,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentClass = null;
 
         if (id == R.id.nav_menu_add_order) {
+            itemAdapterDB.deleteTempItem();
             fragmentClass = AddOrderFragment.class;
         } else if (id == R.id.nav_menu_list_order) {
             fragmentClass = OrderListFragment.class;
-            //startActivity(new Intent(context, PhotoActivity.class));
         } else if (id == R.id.nav_menu_logout) {
             Logout();
         }
@@ -242,5 +245,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     })
                     .show();
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.e("called:", "Yes");
+        ShowOrderList();
     }
 }

@@ -150,15 +150,15 @@ public class LocalSetting {
     public ArrayList<ELCatalog> returnCatalog() {
         ArrayList<ELCatalog> ELCatalogArrayList = new ArrayList<>();
         ELCatalog ELCatalog1 = new ELCatalog();
-        ELCatalog1.setID("0");
+        ELCatalog1.setID("1");
         ELCatalog1.setDescription("Catalog Name 1");
 
         ELCatalog ELCatalog2 = new ELCatalog();
-        ELCatalog2.setID("1");
+        ELCatalog2.setID("2");
         ELCatalog2.setDescription("Catalog Name 2");
 
         ELCatalog ELCatalog3 = new ELCatalog();
-        ELCatalog3.setID("2");
+        ELCatalog3.setID("3");
         ELCatalog3.setDescription("Catalog Name 3");
 
         ELCatalogArrayList.add(ELCatalog1);
